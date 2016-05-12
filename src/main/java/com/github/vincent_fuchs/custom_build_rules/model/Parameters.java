@@ -6,7 +6,7 @@ public class Parameters {
 
     private String directory;
     private String version;
-    private String fileType;
+    private String fileExtension;
 
     public File getDirectory() {
         return new File(directory);
@@ -24,12 +24,12 @@ public class Parameters {
         this.version = version;
     }
 
-    public String getFileType() {
-        return fileType;
+    public String getFileExtension() {
+        return fileExtension;
     }
 
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
     }
 
 }

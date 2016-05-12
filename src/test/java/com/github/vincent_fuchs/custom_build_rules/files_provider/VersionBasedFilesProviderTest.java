@@ -19,7 +19,7 @@ public class VersionBasedFilesProviderTest {
         Parameters parameters = new Parameters();
         parameters.setVersion("2016.AAA.R6");
         parameters.setDirectory(targetDir() + File.separator + "myLiquibaseScripts" + File.separator);
-        parameters.setFileType("sql");
+        parameters.setFileExtension("sql");
 
         myFileProvider=new VersionBasedFilesProvider(parameters);
 

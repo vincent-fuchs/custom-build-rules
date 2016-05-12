@@ -33,6 +33,10 @@ public class LiquibaseFilesCheck implements EnforcerRule {
 
     FilesProvider liquibaseFilesFinder;
 
+    String directory;
+
+    String fileExtension;
+
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
@@ -40,23 +44,33 @@ public class LiquibaseFilesCheck implements EnforcerRule {
         Log log = helper.getLog();
 
         String version=null;
+        String rootDirectory=null;
 
         try {
             version= (String) helper.evaluate( "${project.version}");
             log.info("project version retrieved from Maven context : "+version);
+
+            rootDirectory=(String) helper.evaluate( "${basedir}");
+            log.info("basedir retrieved from Maven context : "+rootDirectory);
         } catch (ExpressionEvaluationException e) {
-            log.error("unable to get version from Maven context",e);
+            log.error("unable to get required infos from Maven context",e);
         }
 
         Parameters parametersToFindFiles=new Parameters();
         parametersToFindFiles.setVersion(version);
+        parametersToFindFiles.setDirectory(rootDirectory+directory);
+        parametersToFindFiles.setFileExtension(fileExtension);
+
 
         if(liquibaseFilesFinder==null){
             liquibaseFilesFinder=new VersionBasedFilesProvider(parametersToFindFiles);
         }
 
-
        List<File> filesToCheck=liquibaseFilesFinder.findFiles();
+
+        if(filesToCheck.isEmpty()){
+            log.warn("no matching file found in " + parametersToFindFiles.getDirectory()+", with pattern "+liquibaseFilesFinder.getPattern());
+        }
 
        StringBuilder rulesCheckResults=new StringBuilder();
 

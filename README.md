@@ -33,6 +33,8 @@ They need to be used with [Maven Enforcer Plugin](https://maven.apache.org/enfor
 				
 					<rules>
 						<LiquibaseFilesCheck implementation="com.github.vincent_fuchs.custom_build_rules.LiquibaseFilesCheck">
+							<directory>/scripts/sql/</directory>
+                            <fileExtension>sql</fileExtension>
 							<RulesToApply>
 								<ruleToApply implementation="com.github.vincent_fuchs.custom_build_rules.rules_to_apply.SomeBasicRulesToApply"/>
 							</RulesToApply>

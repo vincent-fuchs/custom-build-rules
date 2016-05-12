@@ -7,4 +7,6 @@ public interface FilesProvider {
 
     List<File> findFiles();
 
+    String getPattern();
+
 }

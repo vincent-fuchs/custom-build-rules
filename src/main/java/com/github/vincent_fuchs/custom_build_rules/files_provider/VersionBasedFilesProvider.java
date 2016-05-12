@@ -27,6 +27,11 @@ public class VersionBasedFilesProvider implements FilesProvider{
     String version;
     String prefix = "**/*";
     private String fileType;
+
+    public String getPattern() {
+        return pattern;
+    }
+
     private String pattern;
     private String dot = ".";
     private String star = "*";
@@ -36,7 +41,7 @@ public class VersionBasedFilesProvider implements FilesProvider{
     public VersionBasedFilesProvider(Parameters parameters) {
         this.version=parameters.getVersion();
         this.directory = parameters.getDirectory();
-        this.fileType = parameters.getFileType();
+        this.fileType = parameters.getFileExtension();
         this.pattern = prefix+version+star+dot+fileType;
     }
 
@@ -48,6 +53,7 @@ public class VersionBasedFilesProvider implements FilesProvider{
         for (String fileName : allFiles) {
             files.add(new File(directory+ File.separator+fileName));
         }
+
         return files;
     }
 

@@ -14,4 +14,9 @@ public class SomeBasicFilesProvider implements FilesProvider{
 
         return Collections.emptyList();
     }
+
+    @Override
+    public String getPattern() {
+        return null;
+    }
 }
