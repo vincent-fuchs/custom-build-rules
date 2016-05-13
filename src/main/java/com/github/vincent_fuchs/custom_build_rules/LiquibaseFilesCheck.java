@@ -58,7 +58,8 @@ public class LiquibaseFilesCheck implements EnforcerRule {
 
         Parameters parametersToFindFiles=new Parameters();
         parametersToFindFiles.setVersion(version);
-        parametersToFindFiles.setDirectory(rootDirectory+directory);
+        parametersToFindFiles.setDirectory(rootDirectory+
+                com.github.vincent_fuchs.custom_build_rules.util.StringUtils.addLeadingTrailingFileSeparatorIfRequired(directory));
         parametersToFindFiles.setFileExtension(fileExtension);
 
 
