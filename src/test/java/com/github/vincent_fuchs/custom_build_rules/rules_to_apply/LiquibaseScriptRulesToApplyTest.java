@@ -14,22 +14,51 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LiquibaseScriptRulesToApplyTest {
 
     LiquibaseScriptRulesToApply liquibaseScriptRulesToApply=new LiquibaseScriptRulesToApply();
-    String checkResult;
 
-    @Before
-    public void checkOnSampleFile() throws IOException {
-        checkResult = liquibaseScriptRulesToApply.performChecksOn(new File("src/test/resources/verySimpleSqlScript.sql"));
-    }
+
+    private final String RESOURCES_FOLDER="src/test/resources/";
+
 
     @Test
     public void shouldReadExpectedNumberOfSqlStatements() throws Exception {
+
+        liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"incorrectTableCreation.sql"));
+
         assertThat(liquibaseScriptRulesToApply.getSqlStatements()).hasSize(2);
     }
 
     @Test
     @Ignore
     public void shouldFindAnErrorInScript_cantCreateTableIfExistsAlready() throws Exception {
+
+        String checkResult=liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"incorrectTableCreation.sql"));
+
         assertThat(checkResult).isNotEmpty();
+
+        //TODO more assertions on the content of checkResult
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindAnErrorInScript_cantInsertInReferenceTableWithoutProperCheckBefore() throws Exception {
+
+        //not sure what would be the right way to create a table though.. create a "template" stored procedure that is mandatory to use ?
+        String checkResult=liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"scriptWithCommentedStatement.sql"));
+
+        assertThat(checkResult).isNotEmpty();
+
+        //TODO more assertions on the content of checkResult
+    }
+
+    @Test
+    @Ignore
+    public void shouldSkipStatementsMarkedAsSuch() throws Exception {
+
+        String checkResult=liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"insertInReferenceTableWithNoPriorCheck.sql"));
+
+        //assuming the statement with -- skipMavenCheck comment is eliminated altogether from the list of statements
+        // probably the comment should be configurable from XML (but with a defaul value)
+        assertThat(liquibaseScriptRulesToApply.getSqlStatements()).hasSize(1);
     }
 
 }
