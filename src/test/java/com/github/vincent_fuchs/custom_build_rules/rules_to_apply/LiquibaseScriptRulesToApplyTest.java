@@ -8,7 +8,7 @@ import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
+
 public class LiquibaseScriptRulesToApplyTest {
 
     LiquibaseScriptRulesToApply liquibaseScriptRulesToApply=new LiquibaseScriptRulesToApply();
@@ -16,7 +16,7 @@ public class LiquibaseScriptRulesToApplyTest {
     @Test
     public void shouldReadExpectedNumberOfSqlStatements() throws Exception {
 
-        liquibaseScriptRulesToApply.performChecksOn(new File("verySimpleSqlScript.sql"));
+        liquibaseScriptRulesToApply.performChecksOn(new File("src/test/resources/verySimpleSqlScript.sql"));
 
         assertThat(liquibaseScriptRulesToApply.getSqlStatements()).hasSize(2);
 

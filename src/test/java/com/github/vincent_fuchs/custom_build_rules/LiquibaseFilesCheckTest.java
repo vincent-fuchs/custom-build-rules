@@ -5,8 +5,6 @@ import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.SomeBasicRulesToApply;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.junit.Before;
@@ -21,7 +19,6 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,7 +59,7 @@ public class LiquibaseFilesCheckTest {
 
 
     @Test
-    public void shouldAnalyzeTheFilesThatAreFound() throws EnforcerRuleException {
+    public void shouldAnalyzeTheFilesThatAreFound() throws EnforcerRuleException, IOException {
 
         liquibaseFilesCheck.execute(mockHelper);
 
@@ -71,7 +68,7 @@ public class LiquibaseFilesCheckTest {
     }
 
     @Test(expected = EnforcerRuleException.class)
-    public void shouldFailWhenOneFileIsNotCompliant() throws EnforcerRuleException {
+    public void shouldFailWhenOneFileIsNotCompliant() throws EnforcerRuleException, IOException {
 
         when(ruleToApply.performChecksOn(file1)).thenReturn("Issue with file1");
 
@@ -80,7 +77,7 @@ public class LiquibaseFilesCheckTest {
     }
 
     @Test
-    public void shouldAggregateErrorMessagesWhenMultipleFailures() throws MojoFailureException, MojoExecutionException {
+    public void shouldAggregateErrorMessagesWhenMultipleFailures() throws IOException {
 
         when(ruleToApply.performChecksOn(file1)).thenReturn("Issue with file1");
         when(ruleToApply.performChecksOn(file2)).thenReturn("Issue with file2");

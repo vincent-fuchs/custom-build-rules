@@ -13,6 +13,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class LiquibaseFilesCheck implements EnforcerRule {
@@ -80,7 +81,15 @@ public class LiquibaseFilesCheck implements EnforcerRule {
             for (File fileToCheck : filesToCheck) {
                 log.info("\n\t\tperforming check on " + fileToCheck.getName());
 
-                String resultForThatFile = ruleToApply.performChecksOn(fileToCheck);
+
+                String resultForThatFile = null;
+
+                try {
+                    resultForThatFile = ruleToApply.performChecksOn(fileToCheck);
+                } catch (IOException e) {
+                    resultForThatFile="issue while parsing "+fileToCheck.getName();
+                    log.error(resultForThatFile,e);
+                }
 
                 if (StringUtils.isBlank(resultForThatFile)) {
                     log.info("\t\t\tOK, file is compliant");
