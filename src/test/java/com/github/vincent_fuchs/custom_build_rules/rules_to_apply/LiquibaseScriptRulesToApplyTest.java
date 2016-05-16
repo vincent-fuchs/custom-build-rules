@@ -22,4 +22,14 @@ public class LiquibaseScriptRulesToApplyTest {
 
     }
 
+    @Test
+    @Ignore
+    public void shouldFindAnErrorInScript_cantCreateTableIfExistsAlready() throws Exception {
+
+        String checkResult=liquibaseScriptRulesToApply.performChecksOn(new File("src/test/resources/verySimpleSqlScript.sql"));
+
+        assertThat(checkResult).isNotEmpty();
+
+    }
+
 }
