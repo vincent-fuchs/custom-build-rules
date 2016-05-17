@@ -72,4 +72,15 @@ public class LiquibaseScriptRulesToApplyTest {
         //TODO more assertions on the content of checkResult
     }
 
+    @Test
+    @Ignore
+    public void shouldHaveProperCommentsOnTableCreation_forSynonymCreationLater() throws Exception {
+
+        String checkResult=liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"createTableWithProperComment.sql"));
+
+        assertThat(checkResult).isNotEmpty();
+
+        //TODO more assertions on the content of checkResult
+    }
+
 }

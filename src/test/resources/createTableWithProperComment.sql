@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS "TABLE_OK"  ("SOME_FIELD"    VARCHAR2(256 BYTE));
+comment on table TABLE_OK is
+'!S=CWF! some table';
+/
+CREATE TABLE IF NOT EXISTS "TABLE_WITH_NO_COMMENT"  ("SOME_FIELD"    VARCHAR2(256 BYTE));
+/
+CREATE TABLE IF NOT EXISTS "TABLE_WITH_INCORRECT_COMMENT"  ("SOME_FIELD"    VARCHAR2(256 BYTE));
+comment on table TABLE_OK is
+'some comment not matching configured regexp';
+/
