@@ -41,7 +41,6 @@ public class VersionBasedFilesProviderTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnOnlyTheFilesForCurrentVersion_whenVersionIsRcSnapshot() throws IOException {
         parameters.setVersion("2016.AAA.R6.RC-SNAPSHOT");
 
@@ -52,9 +51,8 @@ public class VersionBasedFilesProviderTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnOnlyTheFilesForCurrentVersion_whenVersionIsMinorVersion() throws IOException {
-        parameters.setVersion("2016.CWF.R6.RC00");
+        parameters.setVersion("2016.AAA.R6.RC00");
 
         myFileProvider=new VersionBasedFilesProvider(parameters);
 
