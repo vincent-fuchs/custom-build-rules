@@ -25,12 +25,15 @@ public class EndingSlashRuleToApply implements RuleToApply {
         String firstLine="";
         String secondLine = "";
         while ((firstLine = bufferedReader.readLine()) != null) {
-                if(!firstLine.isEmpty() && firstLine.charAt(0) != '/'){
-                  secondLine = bufferedReader.readLine();
-                    if(secondLine==null || secondLine.charAt(0)!='/'){
-                        message=file.getName()+" - "+ERROR_MESSAGE;
-                    }
+            if(!firstLine.isEmpty() && firstLine.charAt(0) != '/'){
+                secondLine = bufferedReader.readLine();
+                if(secondLine!=null && !secondLine.isEmpty() && secondLine.charAt(0)!='/') {
+                    secondLine = bufferedReader.readLine();
                 }
+                if(secondLine==null || secondLine.charAt(0)!='/'){
+                    message=file.getName()+" - "+ERROR_MESSAGE;
+                }
+            }
         }
         bufferedReader.close();
     }
