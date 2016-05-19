@@ -9,6 +9,9 @@ public class SlashRuleToApply implements RuleToApply {
     private File file;
     private String message="";
 
+    public static final String ERROR_MESSAGE="A Liquibase SQL script is expected to end with a \"/\", and this file doesn't";
+
+
     @Override
     public String performChecksOn(File fileToCheck) throws IOException {
         this.file=fileToCheck;
@@ -25,7 +28,7 @@ public class SlashRuleToApply implements RuleToApply {
                 if(!firstLine.isEmpty() && firstLine.charAt(0) != '/'){
                   secondLine = bufferedReader.readLine();
                     if(secondLine==null || secondLine.charAt(0)!='/'){
-                        message=file.getName()+" has some invalid script.Fix it than build again.";
+                        message=file.getName()+" - "+ERROR_MESSAGE;
                     }
                 }
         }

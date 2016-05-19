@@ -17,7 +17,7 @@ public class LiquibaseScriptRulesToApplyTest {
     LiquibaseScriptRulesToApply liquibaseScriptRulesToApply=new LiquibaseScriptRulesToApply();
 
 
-    private final String RESOURCES_FOLDER="src/test/resources/";
+    public final static String RESOURCES_FOLDER="src/test/resources/";
 
 
     @Test
@@ -60,17 +60,6 @@ public class LiquibaseScriptRulesToApplyTest {
         //assuming the statement with -- skipMavenCheck comment is eliminated altogether from the list of statements
         // probably the comment should be configurable from XML (but with a defaul value)
         assertThat(liquibaseScriptRulesToApply.getSqlStatements()).hasSize(1);
-    }
-
-    @Test
-    public void scriptShouldEndWithForwardSlash() throws Exception {
-
-        SlashRuleToApply slashRuleToApply = new SlashRuleToApply();
-        String checkResult=slashRuleToApply.performChecksOn(new File(RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
-
-        assertThat(checkResult).isNotEmpty();
-
-        //TODO more assertions on the content of checkResult
     }
 
     @Test
