@@ -1,6 +1,7 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply;
 
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase.LiquibaseScriptRulesToApply;
+import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase.SlashRuleToApply;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,10 +63,10 @@ public class LiquibaseScriptRulesToApplyTest {
     }
 
     @Test
-    @Ignore
     public void scriptShouldEndWithForwardSlash() throws Exception {
 
-        String checkResult=liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
+        SlashRuleToApply slashRuleToApply = new SlashRuleToApply();
+        String checkResult=slashRuleToApply.performChecksOn(new File(RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
 
         assertThat(checkResult).isNotEmpty();
 
