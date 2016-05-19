@@ -5,7 +5,7 @@ import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 
 import java.io.*;
 
-public class SlashRuleToApply implements RuleToApply {
+public class EndingSlashRuleToApply implements RuleToApply {
     private File file;
     private String message="";
 

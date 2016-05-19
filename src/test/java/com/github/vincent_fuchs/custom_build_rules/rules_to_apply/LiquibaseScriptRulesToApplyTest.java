@@ -1,13 +1,10 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply;
 
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase.LiquibaseScriptRulesToApply;
-import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase.SlashRuleToApply;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
