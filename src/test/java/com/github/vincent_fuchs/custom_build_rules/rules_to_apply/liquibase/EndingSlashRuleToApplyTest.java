@@ -28,6 +28,13 @@ public class EndingSlashRuleToApplyTest {
 
     }
 
+    @Test
+    public void scriptShouldEndWithForwardSlash_validFile2() throws Exception {
+
+        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript2.sql"));
+        assertThat(checkResult).isEmpty();
+
+    }
 
     @Test
     @Ignore
