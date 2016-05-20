@@ -1,7 +1,6 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.LiquibaseScriptRulesToApplyTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -22,22 +21,28 @@ public class EndingSlashRuleToApplyTest {
 
     @Test
     public void scriptShouldEndWithForwardSlash_validFile() throws Exception {
-
         String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
-        assertThat(checkResult).isEmpty();
+        assertThat(checkResult).isNullOrEmpty();
 
     }
 
     @Test
-    public void scriptShouldEndWithForwardSlash_validFile2() throws Exception {
+    public void scriptShouldEndWithForwardSlash_validFile_butLastLinesBlank() throws Exception {
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript2.sql"));
-        assertThat(checkResult).isEmpty();
+        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+ "simpleValidScript_lastLinesHaveBlankCharacters.sql"));
+        assertThat(checkResult).isNullOrEmpty();
 
     }
 
     @Test
-    @Ignore
+    public void scriptShouldEndWithForwardSlash_validFile_butLastLinesEmpty() throws Exception {
+
+        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+ "simpleValidScript_lastLinesAreEmpty.sql"));
+        assertThat(checkResult).isNullOrEmpty();
+
+    }
+
+    @Test
     public void scriptShouldEndWithForwardSlash_WhenLastLinesAreBlank() throws Exception {
 
         String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlashAndBlankLines.sql"));
@@ -47,20 +52,22 @@ public class EndingSlashRuleToApplyTest {
     @Test
     public void shouldParseSeveralFilesAndReportErrorsOnlyOnce_validFileFirst() throws Exception {
 
-        slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
+        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
+        assertThat(checkResult).isNullOrEmpty();
+
+        checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
         assertThat(checkResult).isEqualTo("scriptWithNoEndingSlash.sql - "+ EndingSlashRuleToApply.ERROR_MESSAGE);
     }
 
     @Test
     public void shouldParseSeveralFilesAndReportErrorsOnlyOnce_invalidFileFirst() throws Exception {
 
-        slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
-
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
-
+        String checkResult = slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
         assertThat(checkResult).isEqualTo("scriptWithNoEndingSlash.sql - "+ EndingSlashRuleToApply.ERROR_MESSAGE);
+
+        checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
+        assertThat(checkResult).isNullOrEmpty();
     }
 
 

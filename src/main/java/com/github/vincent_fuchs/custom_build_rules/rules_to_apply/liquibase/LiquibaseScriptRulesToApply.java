@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class LiquibaseScriptRulesToApply implements RuleToApply {
+public class LiquibaseScriptRulesToApply extends RuleToApply {
 
     List sqlStatements=new ArrayList();
 
     @Override
     public String performChecksOn(File fileToCheck) throws IOException {
 
-        String fileContent=readFile(fileToCheck.getAbsolutePath(), StandardCharsets.UTF_8);
+        String fileContent=readFileAsString(fileToCheck.getAbsolutePath(), StandardCharsets.UTF_8);
 
         sqlStatements= Arrays.asList(fileContent.split("/"));
 
@@ -28,16 +28,6 @@ public class LiquibaseScriptRulesToApply implements RuleToApply {
 
     public List getSqlStatements() {
         return sqlStatements;
-    }
-
-
-
-
-    public static String readFile(String path, Charset encoding)
-            throws IOException
-    {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
     }
 
 }
