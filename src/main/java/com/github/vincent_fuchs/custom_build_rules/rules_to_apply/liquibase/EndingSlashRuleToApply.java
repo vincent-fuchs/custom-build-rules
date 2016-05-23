@@ -5,11 +5,13 @@ import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 public class EndingSlashRuleToApply extends RuleToApply {
 
-    public static final String ERROR_MESSAGE="A Liquibase SQL script is expected to end with a \"/\", and this file doesn't";
+    public static final String ERROR_MESSAGE="This file is expected to end with a \"/\", but it doesn't";
 
+    private static Pattern allBlankCharacters = Pattern.compile("[\\n\\r\\s]+");
 
     @Override
     public String performChecksOn(File fileToCheck) throws IOException {
@@ -20,7 +22,7 @@ public class EndingSlashRuleToApply extends RuleToApply {
 
         String contentAfterLastSlash=fileContentAsString.substring(lastIndexOfSlash+1);
 
-        if(contentAfterLastSlash.isEmpty() || contentAfterLastSlash.matches("[\\n\\r\\s]+")){
+        if(contentAfterLastSlash.isEmpty() || allBlankCharacters.matcher(contentAfterLastSlash).matches()){
             return null;
         }
         else{
