@@ -1,3 +1,5 @@
+![](https://travis-ci.org/vincent-fuchs/custom-build-rules.svg?branch=master)
+
 # Custom Build Rules
 These are a set of rules that we can call to perform additional checks on our code / scripts at build time. 
 
