@@ -7,8 +7,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
 
 /**
  * Based on the project's version, this FileProvider will find all the files in the configured path, that start with the prefix+projectVersion pattern.
@@ -16,6 +14,8 @@ import java.util.regex.Pattern;
 public class VersionBasedFilesProvider implements FilesProvider{
 
     private File directory;
+
+    private VersionExtractor versionExtractor=new MajorVersionExtractor();
 
     public VersionBasedFilesProvider() {
     }
@@ -39,7 +39,7 @@ public class VersionBasedFilesProvider implements FilesProvider{
     private final DirectoryScanner directoryScanner = new DirectoryScanner();
 
     public VersionBasedFilesProvider(Parameters parameters) {
-        this.version=trimVersion(parameters.getVersion());
+        this.version=versionExtractor.extractVersion(parameters.getVersion());
         this.directory = parameters.getDirectory();
         this.fileType = parameters.getFileExtension();
         this.pattern = prefix+version+star+dot+fileType;
@@ -57,12 +57,4 @@ public class VersionBasedFilesProvider implements FilesProvider{
         return files;
     }
 
-    private String trimVersion(String version){
-        String[] words=version.split(Pattern.quote("."));
-        String year=words[0];
-        String moduleName=words[1];
-        String versionNumber=words[2];
-        String exactVersion=year+dot+moduleName+dot+versionNumber;
-        return exactVersion;
-    }
 }
