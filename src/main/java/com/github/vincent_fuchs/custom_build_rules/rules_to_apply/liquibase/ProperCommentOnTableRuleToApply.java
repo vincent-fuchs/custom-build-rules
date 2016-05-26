@@ -24,7 +24,7 @@ public class ProperCommentOnTableRuleToApply extends RuleToApply {
         this.patternThatCommentMustFollow = patternThatCommentMustFollow;
     }
 
-    private String patternThatCommentMustFollow;
+    private String patternThatCommentMustFollow=".*";
 
     @Override
     public String performChecksOn(File fileToCheck) throws IOException {
