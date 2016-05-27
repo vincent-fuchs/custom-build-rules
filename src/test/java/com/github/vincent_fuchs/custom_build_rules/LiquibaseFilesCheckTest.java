@@ -9,7 +9,9 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -50,6 +52,9 @@ public class LiquibaseFilesCheckTest {
     @Mock
     Log mockLogger;
 
+    @Rule
+    public ExpectedException exceptionPolicy = ExpectedException.none();
+
     @Before
     public void configureLiquibaseFilesCheck() throws IOException, ExpressionEvaluationException {
 
@@ -80,23 +85,19 @@ public class LiquibaseFilesCheckTest {
         when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
 
         liquibaseFilesCheck.execute(mockHelper);
-
     }
 
     @Test
-    public void shouldAggregateErrorMessagesWhenMultipleFailures() throws IOException {
+    public void shouldAggregateErrorMessagesWhenMultipleFailures() throws IOException, EnforcerRuleException {
+
+        exceptionPolicy.expect(EnforcerRuleException.class);
+        exceptionPolicy.expectMessage("file1");
+        exceptionPolicy.expectMessage("file2");
 
         when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
         when(ruleToApply.performChecksOn(file2)).thenReturn(Arrays.asList(someParsingIssue2));
 
-        try {
-            liquibaseFilesCheck.execute(mockHelper);
-            fail("An exception should have been thrown !");
-        } catch (EnforcerRuleException e) {
-
-            assertThat(e).hasMessageContaining("file1");
-            assertThat(e).hasMessageContaining("file2");
-        }
+        liquibaseFilesCheck.execute(mockHelper);
     }
 
     private File createFileIfNotExist(String path, String fileName) throws IOException {
