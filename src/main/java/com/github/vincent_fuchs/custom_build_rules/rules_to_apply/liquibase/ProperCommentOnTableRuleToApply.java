@@ -1,14 +1,14 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
+import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.select.Select;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +27,7 @@ public class ProperCommentOnTableRuleToApply extends RuleToApply {
     private String patternThatCommentMustFollow=".*";
 
     @Override
-    public String performChecksOn(File fileToCheck) throws IOException {
+    public List<ParsingIssue> performChecksOn(File fileToCheck) throws IOException {
 
         String fileContentAsString= readFileAsString(fileToCheck.getAbsolutePath(), StandardCharsets.UTF_8);
 
@@ -35,10 +35,9 @@ public class ProperCommentOnTableRuleToApply extends RuleToApply {
 
         Pattern mandatoryCommentPattern = Pattern.compile(patternThatCommentMustFollow);
 
-        StringBuilder checkResults=new StringBuilder();
+        List<ParsingIssue> parsingIssues= new ArrayList<>();
 
-
-            for(int i=0; i < sqlStatements.length ; i++){
+        for(int i=0; i < sqlStatements.length ; i++){
 
                 String statementToParse=sqlStatements[i];
 
@@ -48,23 +47,25 @@ public class ProperCommentOnTableRuleToApply extends RuleToApply {
 
                     String capturedComment=captureCommentIfAny(statementToParse);
                     if(capturedComment==null){
-                        checkResults.append(NO_COMMENT_AT_ALL+" : "+statementToParse);
+                        parsingIssues.add(new ParsingIssue(NO_COMMENT_AT_ALL+" : "+statementToParse,fileToCheck));
                     }
                     else{
                         System.out.println("\tcaptured comment : "+capturedComment);
                         if(!mandatoryCommentPattern.matcher(capturedComment).matches()){
+                            StringBuilder checkResults=new StringBuilder();
                             checkResults.append(COMMENT_NOT_MATCHING_CONFIGURED_PATTERN+" : "+statementToParse);
                             checkResults.append("configured pattern : " + patternThatCommentMustFollow);
+
+                            parsingIssues.add(new ParsingIssue(checkResults.toString(),fileToCheck));
                         }
                         else{
                             System.out.println("\tcomment is matching the configured pattern");
                         }
                     }
                 }
-            }
+        }
 
-
-        return checkResults.toString();
+        return parsingIssues;
 
     }
 

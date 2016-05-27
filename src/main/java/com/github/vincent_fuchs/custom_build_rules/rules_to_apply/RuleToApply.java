@@ -5,16 +5,17 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public abstract class RuleToApply {
 
     /**
      * Will open the file and parse the content, looking for specific violations (that you would need to implement in the class)
      * @param fileToCheck
-     * @return a null or empty String if no violation has been found. A String detailing the found issue(s).
+     * @return a list of issues, if any. an empty list otherwise.
      * It is recommended to be as precise as possible (line number, explanations) so that it's easy to fix for the developer.
      */
-    public abstract String performChecksOn(File fileToCheck) throws IOException;
+    public abstract List<ParsingIssue> performChecksOn(File fileToCheck) throws IOException;
 
 
     protected String readFileAsString(String path, Charset encoding)

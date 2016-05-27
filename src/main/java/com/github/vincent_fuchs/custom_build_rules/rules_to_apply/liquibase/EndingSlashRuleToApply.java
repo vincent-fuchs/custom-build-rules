@@ -1,10 +1,15 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
+import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class EndingSlashRuleToApply extends RuleToApply {
@@ -14,7 +19,7 @@ public class EndingSlashRuleToApply extends RuleToApply {
     private static Pattern allBlankCharacters = Pattern.compile("[\\n\\r\\s]+");
 
     @Override
-    public String performChecksOn(File fileToCheck) throws IOException {
+    public List<ParsingIssue> performChecksOn(File fileToCheck) throws IOException {
 
         String fileContentAsString= readFileAsString(fileToCheck.getAbsolutePath(), StandardCharsets.UTF_8);
 
@@ -23,12 +28,13 @@ public class EndingSlashRuleToApply extends RuleToApply {
         String contentAfterLastSlash=fileContentAsString.substring(lastIndexOfSlash+1);
 
         if(contentAfterLastSlash.isEmpty() || allBlankCharacters.matcher(contentAfterLastSlash).matches()){
-            return null;
+            return Collections.emptyList();
         }
         else{
             System.out.println("not only blank characters: ");
             System.out.println("***"+contentAfterLastSlash+"***");
-            return fileToCheck.getName()+" - "+ERROR_MESSAGE;
+
+            return Arrays.asList(new ParsingIssue(ERROR_MESSAGE,fileToCheck));
         }
 
     }

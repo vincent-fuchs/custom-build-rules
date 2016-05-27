@@ -1,9 +1,11 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.LiquibaseScriptRulesToApplyTest;
+import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,63 +13,81 @@ public class EndingSlashRuleToApplyTest {
 
     EndingSlashRuleToApply slashRuleToApply = new EndingSlashRuleToApply();
 
+    List<ParsingIssue> parsingIssues;
+
     @Test
     public void scriptShouldEndWithForwardSlash_WhenLastLineIsAstatement() throws Exception {
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
-        assertThat(checkResult).contains("scriptWithNoEndingSlash.sql - "+ EndingSlashRuleToApply.ERROR_MESSAGE);
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
 
+        ParsingIssue parsingIssue=parsingIssues.get(0);
+
+        assertThat(parsingIssue.getMessage()).isEqualTo(EndingSlashRuleToApply.ERROR_MESSAGE);
+        assertThat(parsingIssue.getParsedFile().getAbsoluteFile().getName()).endsWith("scriptWithNoEndingSlash.sql");
     }
 
     @Test
     public void scriptShouldEndWithForwardSlash_validFile() throws Exception {
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
-        assertThat(checkResult).isNullOrEmpty();
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
+        assertThat(parsingIssues).isEmpty();
 
     }
 
     @Test
     public void scriptShouldEndWithForwardSlash_validFile_butLastLinesBlank() throws Exception {
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+ "simpleValidScript_lastLinesHaveBlankCharacters.sql"));
-        assertThat(checkResult).isNullOrEmpty();
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+ "simpleValidScript_lastLinesHaveBlankCharacters.sql"));
+        assertThat(parsingIssues).isEmpty();
 
     }
 
     @Test
     public void scriptShouldEndWithForwardSlash_validFile_butLastLinesEmpty() throws Exception {
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+ "simpleValidScript_lastLinesAreEmpty.sql"));
-        assertThat(checkResult).isNullOrEmpty();
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+ "simpleValidScript_lastLinesAreEmpty.sql"));
+        assertThat(parsingIssues).isEmpty();
 
     }
 
     @Test
     public void scriptShouldEndWithForwardSlash_WhenLastLinesAreBlank() throws Exception {
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlashAndBlankLines.sql"));
-        assertThat(checkResult).contains("scriptWithNoEndingSlashAndBlankLines.sql - "+ EndingSlashRuleToApply.ERROR_MESSAGE);
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlashAndBlankLines.sql"));
+
+        ParsingIssue parsingIssue=parsingIssues.get(0);
+
+        assertThat(parsingIssue.getMessage()).isEqualTo(EndingSlashRuleToApply.ERROR_MESSAGE);
+        assertThat(parsingIssue.getParsedFile().getAbsoluteFile().getName()).endsWith("scriptWithNoEndingSlashAndBlankLines.sql");
     }
 
     @Test
     public void shouldParseSeveralFilesAndReportErrorsOnlyOnce_validFileFirst() throws Exception {
 
-        String checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
 
-        assertThat(checkResult).isNullOrEmpty();
+        assertThat(parsingIssues).isEmpty();
 
-        checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
-        assertThat(checkResult).isEqualTo("scriptWithNoEndingSlash.sql - "+ EndingSlashRuleToApply.ERROR_MESSAGE);
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
+
+        ParsingIssue parsingIssue=parsingIssues.get(0);
+
+        assertThat(parsingIssue.getMessage()).isEqualTo(EndingSlashRuleToApply.ERROR_MESSAGE);
+        assertThat(parsingIssue.getParsedFile().getAbsoluteFile().getName()).endsWith("scriptWithNoEndingSlash.sql");
+
     }
 
     @Test
     public void shouldParseSeveralFilesAndReportErrorsOnlyOnce_invalidFileFirst() throws Exception {
 
-        String checkResult = slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
-        assertThat(checkResult).isEqualTo("scriptWithNoEndingSlash.sql - "+ EndingSlashRuleToApply.ERROR_MESSAGE);
+        parsingIssues = slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"scriptWithNoEndingSlash.sql"));
 
-        checkResult=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
-        assertThat(checkResult).isNullOrEmpty();
+        ParsingIssue parsingIssue=parsingIssues.get(0);
+
+        assertThat(parsingIssue.getMessage()).isEqualTo(EndingSlashRuleToApply.ERROR_MESSAGE);
+        assertThat(parsingIssue.getParsedFile().getAbsoluteFile().getName()).endsWith("scriptWithNoEndingSlash.sql");
+
+        parsingIssues=slashRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"simpleValidScript.sql"));
+        assertThat(parsingIssues).isEmpty();
     }
 
 
