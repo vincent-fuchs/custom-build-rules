@@ -15,7 +15,7 @@ public class ProperCommentOnTableRuleToApplyTest {
     @Test
     public void shouldHaveProperCommentsOnTableCreation_forSynonymCreationLater() throws Exception {
 
-        properCommentOnTableRuleToApply.setPatternThatCommentMustFollow("^!S=CWF!.*");
+        properCommentOnTableRuleToApply.setPatternThatCommentMustFollow("^!S=ABC!.*");
 
         String checkResult=properCommentOnTableRuleToApply.performChecksOn(new File(LiquibaseScriptRulesToApplyTest.RESOURCES_FOLDER+"createTableWithProperComment.sql"));
 
