@@ -39,8 +39,8 @@ public class LiquibaseFilesCheckTest {
     @Mock
     private File file2;
 
-    ParsingIssue someParsingIssue1=new ParsingIssue("Issue with file1",file1);
-    ParsingIssue someParsingIssue2=new ParsingIssue("Issue with file2",file2);
+    ParsingIssue someParsingIssue1;
+    ParsingIssue someParsingIssue2;
 
     LiquibaseFilesCheck liquibaseFilesCheck=new LiquibaseFilesCheck();
 
@@ -55,6 +55,9 @@ public class LiquibaseFilesCheckTest {
 
         liquibaseFilesCheck.setRulesToApply(Arrays.asList(ruleToApply));
         liquibaseFilesCheck.setFilesProvider(filesProvider);
+
+        someParsingIssue1=new ParsingIssue("Issue with file1",file1);
+        someParsingIssue2=new ParsingIssue("Issue with file2",file2);
 
         when(mockHelper.evaluate("${project.version}")).thenReturn("1.0.0");
         when(mockHelper.getLog()).thenReturn(mockLogger);
