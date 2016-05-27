@@ -1,6 +1,7 @@
 package com.github.vincent_fuchs.custom_build_rules;
 
 import com.github.vincent_fuchs.custom_build_rules.files_provider.FilesProvider;
+import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.SomeBasicRulesToApply;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
@@ -38,6 +39,9 @@ public class LiquibaseFilesCheckTest {
     @Mock
     private File file2;
 
+    ParsingIssue someParsingIssue1=new ParsingIssue("Issue with file1",file1);
+    ParsingIssue someParsingIssue2=new ParsingIssue("Issue with file2",file2);
+
     LiquibaseFilesCheck liquibaseFilesCheck=new LiquibaseFilesCheck();
 
     @Mock
@@ -70,7 +74,7 @@ public class LiquibaseFilesCheckTest {
     @Test(expected = EnforcerRuleException.class)
     public void shouldFailWhenOneFileIsNotCompliant() throws EnforcerRuleException, IOException {
 
-        when(ruleToApply.performChecksOn(file1)).thenReturn("Issue with file1");
+        when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
 
         liquibaseFilesCheck.execute(mockHelper);
 
@@ -79,8 +83,8 @@ public class LiquibaseFilesCheckTest {
     @Test
     public void shouldAggregateErrorMessagesWhenMultipleFailures() throws IOException {
 
-        when(ruleToApply.performChecksOn(file1)).thenReturn("Issue with file1");
-        when(ruleToApply.performChecksOn(file2)).thenReturn("Issue with file2");
+        when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
+        when(ruleToApply.performChecksOn(file2)).thenReturn(Arrays.asList(someParsingIssue2));
 
         try {
             liquibaseFilesCheck.execute(mockHelper);

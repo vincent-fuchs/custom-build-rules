@@ -3,6 +3,7 @@ package com.github.vincent_fuchs.custom_build_rules;
 import com.github.vincent_fuchs.custom_build_rules.files_provider.FilesProvider;
 import com.github.vincent_fuchs.custom_build_rules.files_provider.VersionBasedFilesProvider;
 import com.github.vincent_fuchs.custom_build_rules.model.Parameters;
+import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
@@ -14,6 +15,7 @@ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluatio
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class LiquibaseFilesCheck implements EnforcerRule {
@@ -74,7 +76,7 @@ public class LiquibaseFilesCheck implements EnforcerRule {
             log.warn("no matching file found in " + parametersToFindFiles.getDirectory()+", with pattern "+liquibaseFilesFinder.getPattern());
         }
 
-       StringBuilder rulesCheckResults=new StringBuilder();
+        List<ParsingIssue> parsingIssues = Collections.emptyList();
 
         for(RuleToApply ruleToApply : this.rulesToApply) {
 
@@ -82,33 +84,36 @@ public class LiquibaseFilesCheck implements EnforcerRule {
                 log.info("\n\t\tperforming check on " + fileToCheck.getName());
 
 
-                String resultForThatFile = null;
+
 
                 try {
-                    resultForThatFile = ruleToApply.performChecksOn(fileToCheck);
+                    parsingIssues = ruleToApply.performChecksOn(fileToCheck);
                 } catch (IOException e) {
-                    resultForThatFile="issue while parsing "+fileToCheck.getName();
-                    log.error(resultForThatFile,e);
+                    parsingIssues.add(new ParsingIssue("issue while parsing ",fileToCheck));
+                    log.error("couldn't parse the file at all",e);
                 }
 
-                if (StringUtils.isBlank(resultForThatFile)) {
+                if (parsingIssues.isEmpty()) {
                     log.info("\t\t\tOK, file is compliant");
-                } else {
-                    log.warn("\t\t\tSome issues with the file : " + resultForThatFile);
-                    rulesCheckResults.append(resultForThatFile).append("\n");
+                }
+                else {
+                    log.warn("\t\t\tSome issues with the file : " + parsingIssues);
                 }
             }
         }
 
-        if(!rulesCheckResults.toString().isEmpty()){
-            throw new EnforcerRuleException("some custom files content check have failed - see above logs for details, or below for summary :\n"+rulesCheckResults.toString());
+        if(!parsingIssues.isEmpty()){
+            throw new EnforcerRuleException("some custom files content check have failed - see above logs for details, or below for summary :\n"+logNicely(parsingIssues));
         }
         else{
             log.info("All files are compliant with the custom checks defined");
         }
 
+    }
 
+    private String logNicely(List<ParsingIssue> parsingIssues){
 
+        return "";
     }
 
     @Override
