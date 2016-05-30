@@ -2,12 +2,12 @@ package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -27,9 +27,9 @@ public class ProperCommentOnTableRuleToApply extends RuleToApply {
     private String patternThatCommentMustFollow=".*";
 
     @Override
-    public List<ParsingIssue> performChecksOn(File fileToCheck) throws IOException {
+    public List<ParsingIssue> performChecksOn(InputStream fileToCheckAsStream, File fileToCheck) throws IOException {
 
-        String fileContentAsString= readFileAsString(fileToCheck.getAbsolutePath(), StandardCharsets.UTF_8);
+        String fileContentAsString= IOUtils.toString(fileToCheckAsStream, "UTF-8");
 
         String[] sqlStatements=fileContentAsString.split("/");
 

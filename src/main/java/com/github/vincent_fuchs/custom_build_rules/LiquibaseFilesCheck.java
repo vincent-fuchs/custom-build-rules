@@ -5,7 +5,6 @@ import com.github.vincent_fuchs.custom_build_rules.files_provider.VersionBasedFi
 import com.github.vincent_fuchs.custom_build_rules.model.Parameters;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
@@ -15,8 +14,7 @@ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluatio
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class LiquibaseFilesCheck implements EnforcerRule {
 
@@ -70,24 +68,21 @@ public class LiquibaseFilesCheck implements EnforcerRule {
             liquibaseFilesFinder=new VersionBasedFilesProvider(parametersToFindFiles);
         }
 
-       List<File> filesToCheck=liquibaseFilesFinder.findFiles();
+        List<File> filesToCheck=liquibaseFilesFinder.findFiles();
 
         if(filesToCheck.isEmpty()){
             log.warn("no matching file found in " + parametersToFindFiles.getDirectory()+", with pattern "+liquibaseFilesFinder.getPattern());
         }
 
-        List<ParsingIssue> parsingIssues = Collections.emptyList();
+        List<ParsingIssue> parsingIssues = new ArrayList<>();
 
         for(RuleToApply ruleToApply : this.rulesToApply) {
 
             for (File fileToCheck : filesToCheck) {
                 log.info("\n\t\tperforming check on " + fileToCheck.getName());
 
-
-
-
                 try {
-                    parsingIssues = ruleToApply.performChecksOn(fileToCheck);
+                    parsingIssues.addAll(ruleToApply.performChecksOn(fileToCheck));
                 } catch (IOException e) {
                     parsingIssues.add(new ParsingIssue("issue while parsing ",fileToCheck));
                     log.error("couldn't parse the file at all",e);
@@ -97,6 +92,7 @@ public class LiquibaseFilesCheck implements EnforcerRule {
                     log.info("\t\t\tOK, file is compliant");
                 }
                 else {
+
                     log.warn("\t\t\tSome issues with the file : " + parsingIssues);
                 }
             }
@@ -113,7 +109,26 @@ public class LiquibaseFilesCheck implements EnforcerRule {
 
     private String logNicely(List<ParsingIssue> parsingIssues){
 
-        return "";
+        Map<File,List<String>> issuesPerFile=new HashMap<>();
+
+        for(ParsingIssue issue : parsingIssues){
+
+            if(!issuesPerFile.containsKey(issue.getParsedFile())){
+                issuesPerFile.put(issue.getParsedFile(),new ArrayList<String>());
+            }
+
+            issuesPerFile.get(issue.getParsedFile()).add(issue.getMessage());
+        }
+
+        StringBuilder sb=new StringBuilder();
+
+        for(Map.Entry<File,List<String>> entry : issuesPerFile.entrySet()){
+            sb.append("issues for file "+entry.getKey().getName()+" : \n");
+            for(String issue : entry.getValue()){
+                sb.append("\t - "+issue+"\n");
+            }
+        }
+        return sb.toString();
     }
 
     @Override

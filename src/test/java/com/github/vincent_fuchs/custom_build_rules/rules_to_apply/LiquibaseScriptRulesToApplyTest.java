@@ -49,6 +49,7 @@ public class LiquibaseScriptRulesToApplyTest {
 
         //TODO more assertions on the content of checkResult
     }
+<<<<<<< HEAD
 
     @Test
     @Ignore
@@ -61,5 +62,7 @@ public class LiquibaseScriptRulesToApplyTest {
         assertThat(liquibaseScriptRulesToApply.getSqlStatements()).hasSize(1);
     }
 
+=======
+>>>>>>> GITHUB/master
 
 }

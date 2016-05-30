@@ -2,11 +2,10 @@ package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
+import org.apache.commons.io.IOUtils;
 
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +18,9 @@ public class EndingSlashRuleToApply extends RuleToApply {
     private static Pattern allBlankCharacters = Pattern.compile("[\\n\\r\\s]+");
 
     @Override
-    public List<ParsingIssue> performChecksOn(File fileToCheck) throws IOException {
+    public List<ParsingIssue> performChecksOn(InputStream fileToCheckAsStream,File fileToCheck) throws IOException {
 
-        String fileContentAsString= readFileAsString(fileToCheck.getAbsolutePath(), StandardCharsets.UTF_8);
+        String fileContentAsString= IOUtils.toString(fileToCheckAsStream, "UTF-8");
 
         int lastIndexOfSlash=fileContentAsString.lastIndexOf("/");
 
