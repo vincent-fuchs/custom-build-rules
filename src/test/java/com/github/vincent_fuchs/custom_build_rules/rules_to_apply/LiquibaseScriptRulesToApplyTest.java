@@ -49,20 +49,5 @@ public class LiquibaseScriptRulesToApplyTest {
 
         //TODO more assertions on the content of checkResult
     }
-<<<<<<< HEAD
-
-    @Test
-    @Ignore
-    public void shouldSkipStatementsMarkedAsSuch() throws Exception {
-
-        parsingIssues=liquibaseScriptRulesToApply.performChecksOn(new File(RESOURCES_FOLDER+"insertInReferenceTableWithNoPriorCheck.sql"));
-
-        //assuming the statement with -- skipMavenCheck comment is eliminated altogether from the list of statements
-        // probably the comment should be configurable from XML (but with a defaul value)
-        assertThat(liquibaseScriptRulesToApply.getSqlStatements()).hasSize(1);
-    }
-
-=======
->>>>>>> GITHUB/master
 
 }
