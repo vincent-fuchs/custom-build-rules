@@ -3,6 +3,7 @@ package com.github.vincent_fuchs.custom_build_rules;
 import com.github.vincent_fuchs.custom_build_rules.files_provider.FilesProvider;
 import com.github.vincent_fuchs.custom_build_rules.files_provider.VersionBasedFilesProvider;
 import com.github.vincent_fuchs.custom_build_rules.model.Parameters;
+import com.github.vincent_fuchs.custom_build_rules.model.ParsedFile;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
@@ -90,7 +91,7 @@ public class LiquibaseFilesCheck implements EnforcerRule {
             log.info("\n\t\tperforming check on " + fileToCheck.getName());
 
             try {
-                parsingIssues.addAll(chainedRulesToApply.performChecksOn(fileToCheck));
+                parsingIssues.addAll(chainedRulesToApply.performChecksOn(new ParsedFile(fileToCheck)));
             } catch (IOException e) {
                 parsingIssues.add(new ParsingIssue("issue while parsing",fileToCheck));
                 log.error("couldn't parse the file at all",e);

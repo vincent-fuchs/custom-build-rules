@@ -2,6 +2,7 @@ package com.github.vincent_fuchs.custom_build_rules.rules_to_apply.liquibase;
 
 
 import com.github.vincent_fuchs.custom_build_rules.LiquibaseFilesCheck;
+import com.github.vincent_fuchs.custom_build_rules.model.ParsedFile;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 import org.apache.commons.io.IOUtils;
@@ -28,13 +29,13 @@ public class SkipMarkedStatementsRuleToApply extends RuleToApply{
     }
 
     @Override
-    public List<ParsingIssue> performChecksOn(File file) throws IOException{
+    public List<ParsingIssue> performChecksOn(ParsedFile file) throws IOException{
 
-        System.out.println("About to perform checks on file "+file.getName()+" by "+this.getClass().getName()+"...");
+        System.out.println("About to perform checks on file "+file.getOriginalFile().getName()+" by "+this.getClass().getName()+"...");
 
         List<String> notSkippedStatements=new ArrayList<>();
 
-        InputStream fileToCheckAsStream=new FileInputStream(file);
+        InputStream fileToCheckAsStream=new FileInputStream(file.getOriginalFile());
 
         String fileContentAsString= IOUtils.toString(fileToCheckAsStream, "UTF-8");
 
@@ -51,10 +52,12 @@ public class SkipMarkedStatementsRuleToApply extends RuleToApply{
 
         File remainingStatements= writeRemainingStatementsInTmpFile(notSkippedStatements);
 
+        ParsedFile originalAndModifiedFiles=new ParsedFile(file.getOriginalFile(),remainingStatements);
+
         List<ParsingIssue> parsingIssues=new ArrayList<>();
 
         if(getNextRuleToApply()!=null) {
-            parsingIssues.addAll(getNextRuleToApply().performChecksOn(remainingStatements));
+            parsingIssues.addAll(getNextRuleToApply().performChecksOn(originalAndModifiedFiles));
         }
         return parsingIssues;
 

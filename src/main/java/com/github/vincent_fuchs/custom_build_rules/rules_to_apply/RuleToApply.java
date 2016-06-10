@@ -1,5 +1,6 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply;
 
+import com.github.vincent_fuchs.custom_build_rules.model.ParsedFile;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -28,9 +29,14 @@ public abstract class RuleToApply {
 
     public List<ParsingIssue> performChecksOn(File file) throws IOException{
 
-        System.out.println("About to perform checks on file "+file.getName()+" by "+this.getClass().getName()+"...");
+        return performChecksOn(new ParsedFile(file));
+    }
 
-        List<ParsingIssue> parsingIssues=performChecksOn(new FileInputStream(file),file);
+    public List<ParsingIssue> performChecksOn(ParsedFile file) throws IOException{
+
+        System.out.println("About to perform checks on file "+file.getOriginalFile().getName()+" by "+this.getClass().getName()+"...");
+
+        List<ParsingIssue> parsingIssues=performChecksOn(new FileInputStream(file.getFileToParse()),file.getFileToParse());
 
         System.out.println("\t -> "+parsingIssues.size()+" issue(s) found");
 

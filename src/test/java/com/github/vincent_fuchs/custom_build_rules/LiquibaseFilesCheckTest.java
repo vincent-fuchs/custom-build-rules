@@ -1,6 +1,7 @@
 package com.github.vincent_fuchs.custom_build_rules;
 
 import com.github.vincent_fuchs.custom_build_rules.files_provider.FilesProvider;
+import com.github.vincent_fuchs.custom_build_rules.model.ParsedFile;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.ParsingIssue;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.RuleToApply;
 import com.github.vincent_fuchs.custom_build_rules.rules_to_apply.SomeBasicRulesToApply;
@@ -73,14 +74,14 @@ public class LiquibaseFilesCheckTest {
 
         liquibaseFilesCheck.execute(mockHelper);
 
-        verify(ruleToApply).performChecksOn(file1);
-        verify(ruleToApply).performChecksOn(file2);
+        verify(ruleToApply).performChecksOn(new ParsedFile(file1));
+        verify(ruleToApply).performChecksOn(new ParsedFile(file2));
     }
 
     @Test(expected = EnforcerRuleException.class)
     public void shouldFailWhenOneFileIsNotCompliant() throws EnforcerRuleException, IOException {
 
-        when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
+        when(ruleToApply.performChecksOn(new ParsedFile(file1))).thenReturn(Arrays.asList(someParsingIssue1));
 
         liquibaseFilesCheck.execute(mockHelper);
     }
@@ -92,8 +93,8 @@ public class LiquibaseFilesCheckTest {
         exceptionPolicy.expectMessage("file1");
         exceptionPolicy.expectMessage("file2");
 
-        when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
-        when(ruleToApply.performChecksOn(file2)).thenReturn(Arrays.asList(someParsingIssue2));
+        when(ruleToApply.performChecksOn(new ParsedFile(file1))).thenReturn(Arrays.asList(someParsingIssue1));
+        when(ruleToApply.performChecksOn(new ParsedFile(file2))).thenReturn(Arrays.asList(someParsingIssue2));
 
         liquibaseFilesCheck.execute(mockHelper);
     }
@@ -105,24 +106,10 @@ public class LiquibaseFilesCheckTest {
         exceptionPolicy.expectMessage("file1");
         exceptionPolicy.expectMessage("file2");
 
-        when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
-        when(ruleToApply.performChecksOn(file2)).thenReturn(Arrays.asList(someParsingIssue2));
+        when(ruleToApply.performChecksOn(new ParsedFile(file1))).thenReturn(Arrays.asList(someParsingIssue1));
+        when(ruleToApply.performChecksOn(new ParsedFile(file2))).thenReturn(Arrays.asList(someParsingIssue2));
 
         liquibaseFilesCheck.execute(mockHelper);
-    }
-
-    private File createFileIfNotExist(String path, String fileName) throws IOException {
-
-        new File(targetDir()+path).mkdirs();
-
-        File fileToCreate=new File(targetDir()+path+fileName);
-
-        if(!fileToCreate.exists()){
-            fileToCreate.createNewFile();
-        }
-
-        return fileToCreate;
-
     }
 
     private File targetDir(){
