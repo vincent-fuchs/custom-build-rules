@@ -1,21 +1,50 @@
 package com.github.vincent_fuchs.custom_build_rules.rules_to_apply;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class RuleToApply {
 
+    public static String getStatementsSeparator(){
+        return "\n/\n";
+    }
+
+    public RuleToApply getNextRuleToApply() {
+        return nextRuleToApply;
+    }
+
+    public void setNextRuleToApply(RuleToApply nextRuleToApply) {
+        this.nextRuleToApply = nextRuleToApply;
+    }
+
+    private RuleToApply nextRuleToApply;
 
     public List<ParsingIssue> performChecksOn(File file) throws IOException{
 
-        return performChecksOn(new FileInputStream(file),file);
+        System.out.println("About to perform checks on file "+file.getName()+" by "+this.getClass().getName()+"...");
 
+        List<ParsingIssue> parsingIssues=performChecksOn(new FileInputStream(file),file);
+
+        System.out.println("\t -> "+parsingIssues.size()+" issue(s) found");
+
+        if(getNextRuleToApply()!=null) {
+            System.out.println("calling next rule..");
+
+            List<ParsingIssue> parsingIssuesForNext=getNextRuleToApply().performChecksOn(file);
+
+            System.out.println("\t-> next rule has found "+parsingIssuesForNext.size()+" issue(s)");
+
+            parsingIssues.addAll(parsingIssuesForNext);
+        }
+
+        return parsingIssues;
     }
 
     /**
@@ -26,6 +55,14 @@ public abstract class RuleToApply {
      * It is recommended to be as precise as possible (line number, explanations) so that it's easy to fix for the developer.
      */
     public abstract List<ParsingIssue> performChecksOn(InputStream fileToCheckAsStream,File file) throws IOException;
+
+    public  List<ParsingIssue> performChecksOn(List<String> statements,File file) throws IOException{
+
+        String joinedStatements=StringUtils.join(statements, getStatementsSeparator());
+
+        return performChecksOn(new ByteArrayInputStream(joinedStatements.getBytes(StandardCharsets.UTF_8)),file);
+    }
+
 
 
     protected String readFileAsString(String path, Charset encoding)

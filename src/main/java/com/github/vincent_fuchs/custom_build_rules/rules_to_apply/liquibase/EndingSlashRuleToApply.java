@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ public class EndingSlashRuleToApply extends RuleToApply {
         String contentAfterLastSlash=fileContentAsString.substring(lastIndexOfSlash+1);
 
         if(contentAfterLastSlash.isEmpty() || allBlankCharacters.matcher(contentAfterLastSlash).matches()){
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         else{
             System.out.println("not only blank characters: ");

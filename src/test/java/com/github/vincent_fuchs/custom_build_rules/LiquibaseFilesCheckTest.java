@@ -98,6 +98,19 @@ public class LiquibaseFilesCheckTest {
         liquibaseFilesCheck.execute(mockHelper);
     }
 
+    @Test
+    public void shouldProcessAsExpectedWithSeveral() throws IOException, EnforcerRuleException {
+
+        exceptionPolicy.expect(EnforcerRuleException.class);
+        exceptionPolicy.expectMessage("file1");
+        exceptionPolicy.expectMessage("file2");
+
+        when(ruleToApply.performChecksOn(file1)).thenReturn(Arrays.asList(someParsingIssue1));
+        when(ruleToApply.performChecksOn(file2)).thenReturn(Arrays.asList(someParsingIssue2));
+
+        liquibaseFilesCheck.execute(mockHelper);
+    }
+
     private File createFileIfNotExist(String path, String fileName) throws IOException {
 
         new File(targetDir()+path).mkdirs();

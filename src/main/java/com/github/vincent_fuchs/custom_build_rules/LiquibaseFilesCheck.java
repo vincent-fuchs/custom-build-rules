@@ -38,6 +38,8 @@ public class LiquibaseFilesCheck implements EnforcerRule {
 
     String fileExtension;
 
+    public static String ROOT_DIRECTORY =null;
+
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
@@ -45,21 +47,21 @@ public class LiquibaseFilesCheck implements EnforcerRule {
         Log log = helper.getLog();
 
         String version=null;
-        String rootDirectory=null;
+
 
         try {
             version= (String) helper.evaluate( "${project.version}");
             log.info("project version retrieved from Maven context : "+version);
 
-            rootDirectory=(String) helper.evaluate( "${basedir}");
-            log.info("basedir retrieved from Maven context : "+rootDirectory);
+            ROOT_DIRECTORY =(String) helper.evaluate( "${basedir}");
+            log.info("basedir retrieved from Maven context : "+ ROOT_DIRECTORY);
         } catch (ExpressionEvaluationException e) {
             log.error("unable to get required infos from Maven context",e);
         }
 
         Parameters parametersToFindFiles=new Parameters();
         parametersToFindFiles.setVersion(version);
-        parametersToFindFiles.setDirectory(rootDirectory+
+        parametersToFindFiles.setDirectory(ROOT_DIRECTORY +
                 com.github.vincent_fuchs.custom_build_rules.util.StringUtils.addLeadingTrailingFileSeparatorIfRequired(directory));
         parametersToFindFiles.setFileExtension(fileExtension);
 
@@ -76,25 +78,29 @@ public class LiquibaseFilesCheck implements EnforcerRule {
 
         List<ParsingIssue> parsingIssues = new ArrayList<>();
 
-        for(RuleToApply ruleToApply : this.rulesToApply) {
+        if(rulesToApply.isEmpty()){
+            throw new IllegalStateException("At least one RuleToApply must be configured");
+        }
 
-            for (File fileToCheck : filesToCheck) {
-                log.info("\n\t\tperforming check on " + fileToCheck.getName());
+        RuleToApply chainedRulesToApply=buildChainOfResponsability(rulesToApply);
+        
+        
+        for (File fileToCheck : filesToCheck) {
 
-                try {
-                    parsingIssues.addAll(ruleToApply.performChecksOn(fileToCheck));
-                } catch (IOException e) {
-                    parsingIssues.add(new ParsingIssue("issue while parsing ",fileToCheck));
-                    log.error("couldn't parse the file at all",e);
-                }
+            log.info("\n\t\tperforming check on " + fileToCheck.getName());
 
-                if (parsingIssues.isEmpty()) {
-                    log.info("\t\t\tOK, file is compliant");
-                }
-                else {
+            try {
+                parsingIssues.addAll(chainedRulesToApply.performChecksOn(fileToCheck));
+            } catch (IOException e) {
+                parsingIssues.add(new ParsingIssue("issue while parsing",fileToCheck));
+                log.error("couldn't parse the file at all",e);
+            }
 
-                    log.warn("\t\t\tSome issues with the file : " + parsingIssues);
-                }
+            if (parsingIssues.isEmpty()) {
+                log.info("\t\t\tOK, file is compliant");
+            }
+            else {
+                log.warn("\t\t\tSome issues with the file : " + parsingIssues);
             }
         }
 
@@ -105,6 +111,17 @@ public class LiquibaseFilesCheck implements EnforcerRule {
             log.info("All files are compliant with the custom checks defined");
         }
 
+    }
+
+    private RuleToApply buildChainOfResponsability(List<RuleToApply> rulesToApply) {
+
+        RuleToApply initialRuleToApply=rulesToApply.get(0);
+
+        for(int i=1 ; i<rulesToApply.size() ; i++){
+            rulesToApply.get(i-1).setNextRuleToApply(rulesToApply.get(i));
+        }
+
+        return initialRuleToApply;
     }
 
     private String logNicely(List<ParsingIssue> parsingIssues){

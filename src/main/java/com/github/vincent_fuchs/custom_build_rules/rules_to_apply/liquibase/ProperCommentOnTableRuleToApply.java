@@ -20,6 +20,14 @@ public class ProperCommentOnTableRuleToApply extends RuleToApply {
 
     private final Pattern capturingComment = Pattern.compile(".*IS[\\n\\r\\s]'(.*)'");
 
+    public ProperCommentOnTableRuleToApply(String patternThatCommentMustFollow) {
+        this.patternThatCommentMustFollow = patternThatCommentMustFollow;
+    }
+
+    public ProperCommentOnTableRuleToApply() {
+        super();
+    }
+
     public void setPatternThatCommentMustFollow(String patternThatCommentMustFollow) {
         this.patternThatCommentMustFollow = patternThatCommentMustFollow;
     }
