@@ -22,4 +22,23 @@ public class ParsingIssue {
     public File getParsedFile() {
         return parsedFile;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ParsingIssue that = (ParsingIssue) o;
+
+        if (!message.equals(that.message)) return false;
+        return parsedFile.equals(that.parsedFile);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = message.hashCode();
+        result = 31 * result + parsedFile.hashCode();
+        return result;
+    }
 }
