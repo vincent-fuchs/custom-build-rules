@@ -62,21 +62,5 @@ public abstract class RuleToApply {
      */
     public abstract List<ParsingIssue> performChecksOn(InputStream fileToCheckAsStream,File file) throws IOException;
 
-    public  List<ParsingIssue> performChecksOn(List<String> statements,File file) throws IOException{
-
-        String joinedStatements=StringUtils.join(statements, getStatementsSeparator());
-
-        return performChecksOn(new ByteArrayInputStream(joinedStatements.getBytes(StandardCharsets.UTF_8)),file);
-    }
-
-
-
-    protected String readFileAsString(String path, Charset encoding)
-            throws IOException
-    {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
-    }
-
 
 }
