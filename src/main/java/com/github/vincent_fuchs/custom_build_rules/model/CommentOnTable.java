@@ -19,16 +19,8 @@ public class CommentOnTable {
         return comment;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public String getTable() {
         return table;
-    }
-
-    public void setTable(String table) {
-        this.table = table;
     }
 
     private String comment;
